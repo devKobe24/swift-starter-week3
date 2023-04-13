@@ -28,4 +28,4 @@ let missKim: Person = Person(
 
 let yagombucks: CoffeeShop = CoffeeShop(barista: misterKim)
 
-missKim.order(.americano, of: yagombucks, by: missKim.name)
+missKim.order(.americano, of: yagombucks, by: missKim)

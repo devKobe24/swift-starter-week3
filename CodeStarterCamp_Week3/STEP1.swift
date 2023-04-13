@@ -32,8 +32,8 @@ class Person {
 		print("물건을 사다")
 	}
 	
-	func order(_ coffee: Coffee, of coffeeShop: CoffeeShop, by name: String) {
-		coffeeShop.make(coffee, for: name)
+	func order(_ coffee: Coffee, of coffeeShop: CoffeeShop, by customer: Person) {
+		coffeeShop.make(coffee, for: customer)
 		
 		let price = coffee.price
 		print("COFFEE PRICE=====>>>> \(price)")
@@ -78,9 +78,19 @@ enum Coffee: String {
 class CoffeeShop {
 	var barista: Person
 	var sales: Int = 0
-	var pickUpTable: [Coffee] = [] {
+	var pickUpTable: [(coffee: Coffee, customer: Person)] = [] {
 		didSet {
-			print("oldValue =====>>>> \(oldValue)")
+			guard let pickupMenu = pickUpTable.last else { return }
+			let customName = pickupMenu.customer.name
+			let orderedCoffee = pickupMenu.coffee
+			let customerMoney = pickupMenu.customer.money
+			
+			if customerMoney >= orderedCoffee.price {
+				print("\(customName) 님이 주문하신 \(orderedCoffee)(이/가) 준비되었습니다. 픽업대에서 가져가주세요.")
+			} else {
+				print("\(orderedCoffee.price - customerMoney)원 만큼 부족하므로 \(customName) 님이 주문하신 \(orderedCoffee)(을/를) 준비할 수 없습니다.")
+			}
+			
 		}
 	}
 	var menu: [Coffee: Int] = [
@@ -98,12 +108,10 @@ class CoffeeShop {
 		print("주문을 받는 메서드")
 	}
 	
-	func make(_ coffee: Coffee, for name: String) {
+	func make(_ coffee: Coffee, for customer: Person) {
 		let brewedCoffee = brewCoffee(coffee)
-		
-		pickUpTable.append(brewedCoffee)
-		
-		print("\(name) 님이 주문하신 \(brewedCoffee)(이/가) 준비되었습니다. 픽업대에서 가져가주세요.")
+		// Tuple을 append 하기 때문에 아래와 같이 코드를 작성함.
+		pickUpTable.append((brewedCoffee, customer))
 	}
 	
 	func brewCoffee(_ coffee: Coffee) -> Coffee {
